@@ -837,12 +837,26 @@ def form():
 @app.get("/health", response_class=HTMLResponse)
 def health():
     return "ok"
+import numpy as np
 
+def convert_numpy(obj):
+    if isinstance(obj, dict):
+        return {k: convert_numpy(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy(v) for v in obj]
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, (np.float32, np.float64)):
+        return float(obj)
+    elif isinstance(obj, (np.int32, np.int64)):
+        return int(obj)
+    else:
+        return obj
 
 from fastapi import Body
 
 @app.post("/api/predict")
-def predict_api(payload: dict = Body(...)):
+def predict_api(payload: dict):
     result = _predict_core(
         state=payload["state"],
         district=payload["district"],
@@ -851,8 +865,8 @@ def predict_api(payload: dict = Body(...)):
         sowing_date=payload["sowing_date"],
         end_date=payload.get("end_date")
     )
-    return result
 
+    return convert_numpy(result)
 # Continue in next message with the @app.post("/predict") endpoint...
 @app.post("/predict")
 async def predict(
