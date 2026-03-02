@@ -692,7 +692,7 @@ def _predict_core(state: str, district: str, crop: str,
         "days_remaining": season_info["days_remaining"],
         "past_harvest": season_info["past_harvest"],
         "confidence": insights,
-        "weather_cumulative": weather_cumulative.tolist(),
+        "weather_cumulative": weather_cumulative,
         "base_predictions": base_preds_array.tolist() if len(base_preds_array) > 0 else [],
         "fold_std": round(fold_std, 3),
         "fold_agreement": (
