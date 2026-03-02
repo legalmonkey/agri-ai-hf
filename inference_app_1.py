@@ -838,6 +838,21 @@ def form():
 def health():
     return "ok"
 
+
+from fastapi import Body
+
+@app.post("/api/predict")
+def predict_api(payload: dict = Body(...)):
+    result = _predict_core(
+        state=payload["state"],
+        district=payload["district"],
+        crop=payload["crop"],
+        land_area=float(payload["land_area"]),
+        sowing_date=payload["sowing_date"],
+        end_date=payload.get("end_date")
+    )
+    return result
+
 # Continue in next message with the @app.post("/predict") endpoint...
 @app.post("/predict")
 async def predict(
